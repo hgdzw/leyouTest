@@ -1,0 +1,53 @@
+server:
+  port: 10010
+spring:
+  application:
+    name: Ly-gateway
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka
+    registry-fetch-interval-seconds: 5
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 6000 # 熔断超时时长：6000ms
+ribbon:
+  ConnectTimeout: 500 # ribbon链接超时时长
+  ReadTimeout: 2000 # ribbon读取超时时长
+  MaxAutoRetries: 0  # 当前服务重试次数
+  MaxAutoRetriesNextServer: 1 # 切换服务重试次数
+  OkToRetryOnAllOperations: false # 是否对所有的请求方式都重试，只对get请求重试
+zuul:
+  prefix: /api
+  routes:
+    item-service:
+      path: /item/**
+      serviceId: item-service
+      #strip-prefix: false #是否在转发时，去除路由前缀，这里不去除，映射路径中的user就会继续转发
+    image-service:
+      path: /upload/**
+      serviceId: upload-service
+    search-service:
+      path: /search/**
+      serviceId: search-service
+ly:
+  cors:
+    allowedOrigins:
+      - http://manage.leyou.com
+      - http://www.leyou.com
+    allowedCredentials: true
+    allowedHeaders:
+      - "*"
+    allowedMethods:
+      - GET
+      - POST
+      - DELETE
+      - PUT
+      - OPTIONS
+      - HEAD
+    maxAge: 360000
+    filterPath: "/**"

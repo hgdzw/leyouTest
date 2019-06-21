@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    mapper标签：用来配置各种类型的sql语句和高级配置的
+    namespace属性：名称空间(命名空间)，该值必须是唯一的，一般用来区分不同的映射文件的
+-->
+<mapper namespace="com.leyou.mapper.CategoryMapper">
+    <!--
+       select标签：是专门用来编写查询的sql语句的声明(statement)
+        id属性：该查询语句的唯一标识，不能重复，一般是用来被引用的
+        resultType属性：结果集类型，将查询出来的数据封装到哪个类型中
+       -->
+
+    <!--<resultMap id="CategoryType" type="Category1" autoMapping="true">-->
+
+        <!--<id property="id" column="id"></id>-->
+    <!--</resultMap>-->
+    
+    
+    <select id="queryListByBrandId" resultType="Category">
+
+        SELECT tc.id, tc.`name`, tc.parent_id, tc.is_parent, tc.sort
+        FROM tb_category_brand tcb LEFT JOIN tb_category tc ON tcb.category_id = tc.id
+        WHERE tcb.brand_id = #{id}
+
+    </select>
+
+
+</mapper>

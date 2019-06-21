@@ -1,0 +1,18 @@
+server:
+  port: 8083
+spring:
+  application:
+    name: search-service
+  data:
+    elasticsearch:
+      cluster-name: leyou-elastic
+      #cluster-nodes: 192.168.29.93:9301,192.168.29.93:9302,192.168.29.93:9303
+      cluster-nodes: 192.168.47.69:9300
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka
+    registry-fetch-interval-seconds: 5
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
