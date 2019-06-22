@@ -33,6 +33,16 @@ public class BrandController {
     }
 
 
+    /**
+     * 根据id列表 查询brand
+     * @param idList
+     * @return
+     */
+    @GetMapping("/list")
+    public ResponseEntity<List<BrandDTO>> queryBrandsByIds(@RequestParam("ids")List<Long> idList){
+
+        return ResponseEntity.ok(brandService.queryBrandsByIds(idList));
+    }
 
     /**
      * 根据cid 查询品牌的信息

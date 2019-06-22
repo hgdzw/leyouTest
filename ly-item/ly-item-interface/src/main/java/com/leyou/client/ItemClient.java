@@ -4,9 +4,7 @@ import com.leyou.common.vo.PageResult;
 import com.leyou.item.dto.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,6 +15,15 @@ import java.util.List;
  */
 @FeignClient(value = "item-service")
 public interface ItemClient {
+
+
+    /**
+     * 根据 id列表 查询品牌
+     * @param idList
+     * @return
+     */
+    @GetMapping("/brand/list")
+    List<BrandDTO> queryBrandsByIds(@RequestParam("ids")List<Long> idList);
 
     /**
      * 根据id查询品牌

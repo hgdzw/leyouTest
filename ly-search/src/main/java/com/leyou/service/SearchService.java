@@ -11,20 +11,27 @@ import com.leyou.item.dto.*;
 import com.leyou.pojo.Goods;
 import com.leyou.repository.GoodsRepository;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.Operator;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.Aggregation;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.aggregation.AggregatedPage;
-import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.SourceFilter;
+import org.springframework.data.elasticsearch.core.query.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -192,7 +199,11 @@ public class SearchService {
         //1.source 过滤
         // 1.1 source过滤
         queryBuilder.withSourceFilter(new FetchSourceFilter(new String[]{"id", "subTitle", "skus"}, null));        //2. 构建查询条件         ??
-        queryBuilder.withQuery(QueryBuilders.matchQuery("all", key).operator(Operator.AND));
+
+        //添加查询条件
+        QueryBuilder basicQuery = buildBasicQuery(searchRequest);
+        queryBuilder.withQuery(basicQuery);
+//        queryBuilder.withQuery(QueryBuilders.matchQuery("all", key).operator(Operator.AND));
 
         //分页
         Integer page = searchRequest.getPage()-1;
@@ -211,5 +222,200 @@ public class SearchService {
         List<GoodsDTO> goodsDTOS = BeanHelper.copyWithCollection(list, GoodsDTO.class);
 
         return new PageResult<>(total,totalPages,goodsDTOS);
+    }
+
+
+    /**
+     * 查询用来搜索品牌和规格参数的过滤项
+     * @param searchRequest
+     * @return
+     */
+    public Map<String, List<?>> searchFilter(SearchRequest searchRequest) {
+
+        //构建返回的集合
+        HashMap<String, List<?>> map = new HashMap<>();
+
+        //构建查询条件
+        NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+        //添加查询条件 根据key或者复杂查询
+        QueryBuilder basicQuery = buildBasicQuery(searchRequest);
+        queryBuilder.withQuery(basicQuery);
+        // 2.2.减少查询结果(这里只需要聚合结果)
+        // 每页显示1个   ????
+        queryBuilder.withPageable(PageRequest.of(0, 1));
+        // 显示空的source   ????
+        queryBuilder.withSourceFilter(new FetchSourceFilterBuilder().build());
+
+
+        //添加聚合条件
+        //根据  分类和品牌进行聚合
+        String categoryAgg = "categoryAgg";
+        queryBuilder.addAggregation(AggregationBuilders.terms(categoryAgg).field("categoryId"));
+
+        String brandAgg = "brandAgg";
+        queryBuilder.addAggregation(AggregationBuilders.terms(brandAgg).field("brandId"));
+
+
+        //发起查询
+        AggregatedPage<Goods> goods = esTemplate.queryForPage(queryBuilder.build(), Goods.class);
+        //解析查询结果
+        //解析分类聚合结果
+        Aggregations aggregations = goods.getAggregations();
+
+        LongTerms cTerms = aggregations.get(categoryAgg);
+        List<Long> idList = handleCategoryAgg(cTerms, map);
+
+        //解析品牌聚合结果
+        LongTerms bTerms = aggregations.get(brandAgg);
+        handlebeandAgg(bTerms,map);
+
+        //规格参数处理   如果分类数量为1 则处理
+        if (null != idList && idList.size() == 1) {
+            //处理规格参数的聚合  需要参数  分类id  查询条件  过滤项集合
+            handleSpecAgg(idList.get(0),basicQuery,map);
+
+        }
+        return map;
+    }
+
+    /**
+     * 查询条件   因为查询条件可以用来扩展
+     * @param searchRequest
+     * @return
+     */
+    private QueryBuilder buildBasicQuery(SearchRequest searchRequest) {
+
+        //这是高级查询  bool 查询
+        BoolQueryBuilder queryBuilder = new BoolQueryBuilder();
+        //添加基础查询条件
+        queryBuilder.must(QueryBuilders.matchQuery("all", searchRequest.getKey()).operator(Operator.AND));
+
+
+        //这个是 取出过滤的查询条件
+        Map<String, String> filter = searchRequest.getFilter();
+
+        //如果不为空 则把条件放进查询的里面
+        if (!CollectionUtils.isEmpty(filter)) {
+
+            for (Map.Entry<String, String> stringEntry : filter.entrySet()) {
+                //获取过滤条件的key
+                String key = stringEntry.getKey();
+                //是把里面的key 变成 索引库对应的key
+                if ("分类".equals(key)) {
+                    key = "categoryId";
+                } else if ("品牌".equals(key)) {
+                    key = "brandId";
+                }else {
+                    key = "specs." + key;
+                }
+                //获取值
+                String value = stringEntry.getValue();
+
+                //添加过滤条件
+                queryBuilder.filter(QueryBuilders.termQuery(key, value));
+            }
+        }
+        return queryBuilder;
+
+    }
+
+    /**
+     * 根据分类id 来进行规格参数的聚合
+     * @param aLong
+     * @param basicQuery
+     * @param map
+     */
+    private void handleSpecAgg(Long aLong, QueryBuilder basicQuery, HashMap<String, List<?>> map) {
+
+        //根据分类id查询对应的 规格参数
+        List<SpecParamDTO> specParamDTOS = itemClient.queryParamByGid(null, aLong, true);
+        //获取名称
+        List<String> specNames = specParamDTOS.stream().map(SpecParamDTO::getName).collect(Collectors.toList());
+        //构建查询条件 添加查询
+        NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+        queryBuilder.withQuery(basicQuery);
+        // 2.2.减少查询结果(这里只需要聚合结果)
+        // 每页显示1个
+        queryBuilder.withPageable(PageRequest.of(0, 1));
+        // 显示空的source
+        queryBuilder.withSourceFilter(new FetchSourceFilterBuilder().build());
+
+        // 3.聚合条件
+        specNames.forEach(name -> queryBuilder.addAggregation(AggregationBuilders.terms(name)
+                .field("specs."+name)));
+
+        /*for (SpecParamDTO param : specParamDTOS) {
+            // 获取param的name，作为聚合名称
+            String name = param.getName();
+            queryBuilder.addAggregation(AggregationBuilders.terms(name).field("specs." + name));
+        }*/
+
+        //4.发起请求
+        AggregatedPage<Goods> goods = esTemplate.queryForPage(queryBuilder.build(), Goods.class);
+
+        //5.解析结果
+        //5.1 遍历名称 获取里面的每一个
+        Aggregations aggregations = goods.getAggregations();
+        for (String specName : specNames) {
+            //获取其中的值
+            StringTerms terms = aggregations.get(specName);
+
+            List<String> paramValues = terms.getBuckets().stream()
+                    //获取里面的名称
+                    .map(StringTerms.Bucket::getKeyAsString)
+                    //过滤掉空的待选项
+                    .filter(StringUtils::isNoneBlank)
+                    .collect(Collectors.toList());
+            //将key  - value  加入map中
+            map.put(specName, paramValues);
+        }
+    }
+
+    /**
+     * 将传进来的聚合的beand 解析到 map集合中
+     * @param brandAgg
+     * @param map
+     */
+    private void handlebeandAgg(LongTerms brandAgg, HashMap<String, List<?>> map) {
+        //解析bucket 得到id集合
+        List<LongTerms.Bucket> buckets = brandAgg.getBuckets();
+        for (LongTerms.Bucket bucket : buckets) {
+            Number keyAsNumber = bucket.getKeyAsNumber();
+            long l = keyAsNumber.longValue();
+        }
+
+        List<Long> collect = brandAgg.getBuckets()
+                .stream()
+                .map(LongTerms.Bucket::getKeyAsNumber)
+                .map(Number::longValue)
+                .collect(Collectors.toList());
+        //根据id的集合 获取id的名称集合
+        List<BrandDTO> brandDTOS = itemClient.queryBrandsByIds(collect);
+//        List<String> stringStream = brandDTOS.stream().map(BrandDTO::getName).collect(Collectors.toList());
+        //将集合放进map中
+        map.put("品牌", brandDTOS);
+    }
+
+    /**
+     * 将传进来的分类聚合 解析到map集合中
+     *
+     * @param categoryAgg
+     * @param map
+     */
+    private List<Long> handleCategoryAgg(LongTerms categoryAgg, HashMap<String, List<?>> map) {
+
+        //解析bucket 得到id集合
+        List<Long> collect = categoryAgg.getBuckets().stream().map(LongTerms.Bucket::getKeyAsNumber)
+                .map(Number::longValue)
+                .collect(Collectors.toList());
+
+        //根据集合 得到分类的集合
+        List<CategoryDTO> categoryDTOS = itemClient.queryCategoryByIds(collect);
+
+        // 存入map
+        map.put("分类", categoryDTOS);
+
+        //返回ids的数量   用来判断分类的数量是不是等于 一  是否发起查询规格参数的请求
+        return collect;
     }
 }

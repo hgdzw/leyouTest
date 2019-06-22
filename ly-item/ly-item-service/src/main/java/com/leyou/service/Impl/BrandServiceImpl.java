@@ -188,5 +188,23 @@ public class BrandServiceImpl implements BrandService {
     }
 
 
+    /**
+     * 根据ids  查询品牌列表
+     * @param idList
+     * @return
+     */
+    @Override
+    public List<BrandDTO> queryBrandsByIds(List<Long> idList) {
+        if (CollectionUtils.isEmpty(idList)) {
+            throw new LyException(ExceptionEnum.INVALID_PARAM_ERROR);
+        }
 
+        List<Brand> brands = brandMapper.selectByIdList(idList);
+        if (CollectionUtils.isEmpty(brands)) {
+            throw new LyException(ExceptionEnum.INVALID_PARAM_ERROR);
+        }
+
+        return BeanHelper.copyWithCollection(brands,BrandDTO.class);
+
+    }
 }

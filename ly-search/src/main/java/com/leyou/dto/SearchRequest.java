@@ -1,5 +1,7 @@
 package com.leyou.dto;
 
+import java.util.Map;
+
 /**
  * @Author: dzw
  * @Date: 2019/6/20 11:22
@@ -10,9 +12,26 @@ public class SearchRequest {
     private String key;
     private Integer page;
 
+    private Map<String,String> filter;    //选中的过滤项
+
     private final static Integer DEFAULT_SIZE = 20; //大小不是从页面获取的 而是固定的
     private final static Integer DEFAULT_PAGE = 1;
 
+    public Map<String, String> getFilter() {
+        return filter;
+    }
+
+    public void setFilter(Map<String, String> filter) {
+        this.filter = filter;
+    }
+
+    public static Integer getDefaultSize() {
+        return DEFAULT_SIZE;
+    }
+
+    public static Integer getDefaultPage() {
+        return DEFAULT_PAGE;
+    }
 
     public String getKey() {
         return key;

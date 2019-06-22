@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -93,5 +94,28 @@ public class CategoryServiceImpl implements CategoryService {
             throw new LyException(ExceptionEnum.CATEGORY_NOT_FOUND);
         }
         return BeanHelper.copyWithCollection(categories,CategoryDTO.class);
+    }
+
+    /**
+     * 根据三级分类查询前两级分类
+     * @param id
+     * @return
+     */
+    @Override
+    public List<CategoryDTO> queryAllByCid3(Long id) {
+        Category c3 = categoryMapper.selectByPrimaryKey(id);
+        if (c3 == null) {
+            throw new LyException(ExceptionEnum.CATEGORY_NOT_FOUND);
+        }
+        Category c2 = categoryMapper.selectByPrimaryKey(c3.getParentId());
+        if (c2 == null) {
+            throw new LyException(ExceptionEnum.CATEGORY_NOT_FOUND);
+        }
+        Category c1 = categoryMapper.selectByPrimaryKey(c2.getParentId());
+        if (c1 == null) {
+            throw new LyException(ExceptionEnum.CATEGORY_NOT_FOUND);
+        }
+        List<Category> list = Arrays.asList(c1, c2, c3);
+        return BeanHelper.copyWithCollection(list, CategoryDTO.class);
     }
 }

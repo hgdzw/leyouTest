@@ -22,4 +22,5 @@ public interface BrandService {
 
     List<BrandDTO> queryBrandByCid(Long cid);
 
+    List<BrandDTO> queryBrandsByIds(List<Long> idList);
 }

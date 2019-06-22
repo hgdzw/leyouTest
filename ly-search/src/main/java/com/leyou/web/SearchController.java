@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @Author: dzw
  * @Date: 2019/6/20 11:29
@@ -30,6 +33,18 @@ public class SearchController {
         return ResponseEntity.status(HttpStatus.OK).body(searchService.queryGoodPageBySearch(searchRequest));
 
     }
+
+    /**
+     * 查询用来搜索过滤品牌和分类的
+     * @param searchRequest
+     * @return
+     */
+    @PostMapping("filter")
+    public ResponseEntity<Map<String,List<?>>> searchFilter(@RequestBody SearchRequest searchRequest){
+
+        return ResponseEntity.ok(searchService.searchFilter(searchRequest));
+    }
+
 
     @GetMapping("/get")
     public ResponseEntity<Void> queryGet(@RequestParam("id")Long id){
