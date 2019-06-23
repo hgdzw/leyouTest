@@ -21,4 +21,6 @@ public interface SpecService {
     void deleteParam(Long id);
 
     List<SpecParamDTO> querySpecParams(Long gid, Long cid, Boolean searching);
+
+    List<SpecGroupDTO> querySpecsByCid(Long cid);
 }

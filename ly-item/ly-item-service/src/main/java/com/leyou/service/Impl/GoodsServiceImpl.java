@@ -319,14 +319,17 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     public SpuDTO querySpuBySpId(Long spuId) {
 
-        Spu spu = new Spu();
-        spu.setId(spuId);
-        Spu spu1 = spuMapper.selectByPrimaryKey(spu);
+        Spu spu1 = spuMapper.selectByPrimaryKey(spuId);
         if (null==spu1) {
             throw new LyException(ExceptionEnum.SPEC_NOT_FOUND);
         }
+        SpuDTO spuDTO = BeanHelper.copyProperties(spu1, SpuDTO.class);
+        //查询spudatil
+        spuDTO.setSpuDetail(queryDatailBySpId(spuId));
+        //查询skus
+        spuDTO.setSkus(querySkuBySpuId(spuId));
 
-        return BeanHelper.copyProperties(spu1,SpuDTO.class);
+        return spuDTO;
     }
 
     /**

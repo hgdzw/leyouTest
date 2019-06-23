@@ -34,6 +34,21 @@ public class SpecGroupController {
         return ResponseEntity.status(HttpStatus.OK).body(specService.queryGroupByCid(cid));
     }
 
+
+
+    /**
+     * 根据分类id 查询规格组和规格参数的信息
+     * @param cid
+     * @return
+     */
+    @GetMapping("/of/category")
+    public ResponseEntity<List<SpecGroupDTO>> querySpecsByCid(@RequestParam("id")Long cid){
+
+        return ResponseEntity.ok(specService.querySpecsByCid(cid));
+
+    }
+
+
     /**
      * 根据 cid  或者 组id  或者搜索 获取数据
      * @param gid   规格组id

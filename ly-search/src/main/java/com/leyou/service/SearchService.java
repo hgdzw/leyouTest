@@ -2,6 +2,8 @@ package com.leyou.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.leyou.client.ItemClient;
+import com.leyou.common.enums.ExceptionEnum;
+import com.leyou.common.exception.LyException;
 import com.leyou.common.utils.BeanHelper;
 import com.leyou.common.utils.JsonUtils;
 import com.leyou.common.vo.PageResult;
@@ -192,6 +194,9 @@ public class SearchService {
 
         String key = searchRequest.getKey();
 
+        if (!StringUtils.isNoneBlank(key)) {
+            throw new LyException(ExceptionEnum.INVALID_PARAM_ERROR);
+        }
         //构建查询对象
         NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
 

@@ -15,7 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Author: dzw
@@ -51,6 +54,30 @@ public class SpecServiceImpl implements SpecService {
         List<SpecGroupDTO> specGroupDTOS = BeanHelper.copyWithCollection(groups, SpecGroupDTO.class);
 
         return specGroupDTOS;
+    }
+
+    /**
+     * 根据 分类id 查询规格组 和 规格的信息
+     *  和上面不一样的是  里面含有规格信息
+     * @param cid
+     * @return
+     */
+    @Override
+    public List<SpecGroupDTO> querySpecsByCid(Long cid) {
+
+        //查询规格组
+        List<SpecGroupDTO> groupDTOS = queryGroupByCid(cid);
+        //查询规格参数
+        List<SpecParamDTO> specParamDTOS = querySpecParams(null, cid, null);
+
+        // 将规格参数按照groupId进行分组，得到每个group下的param的集合 TODO 这里分组是个问题
+        Map<Long, List<SpecParamDTO>> collect = specParamDTOS.stream().collect(Collectors.groupingBy(SpecParamDTO::getGroupId));
+
+        //填写到 group中
+        for (SpecGroupDTO groupDTO : groupDTOS) {
+            groupDTO.setParams(collect.get(groupDTO.getId()));
+        }
+        return groupDTOS;
     }
 
     /**

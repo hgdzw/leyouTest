@@ -28,6 +28,13 @@ public class GoodsController {
     private GoodsServiceImpl goodsService;
 
 
+    @GetMapping("spu/{id}")
+    public SpuDTO querySpuById(@PathVariable("id")Long id){
+
+        return goodsService.querySpuBySpId(id);
+    }
+
+
     /**
      * 根据spuid查询spu的信息
      * @param spuId

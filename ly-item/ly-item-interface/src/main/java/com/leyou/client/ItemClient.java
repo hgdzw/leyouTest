@@ -34,6 +34,22 @@ public interface ItemClient {
     BrandDTO queryBrandById(@PathVariable("id") Long id);
 
     /**
+     * 根据spuid 查询 spu
+     * @param id
+     * @return
+     */
+    @GetMapping("spu/{id}")
+    public SpuDTO querySpuById(@PathVariable("id")Long id);
+
+    /**
+     * 根据分类id 查询商品规格和规格组的信息
+     * @param cid
+     * @return
+     */
+    @GetMapping("/spec/of/category")
+    public List<SpecGroupDTO> querySpecsByCid(@RequestParam("id")Long cid);
+
+    /**
      * 根据id的集合查询商品分类
      * @param idList 商品分类的id集合
      * @return 分类集合
