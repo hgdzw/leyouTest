@@ -8,6 +8,18 @@ spring:
     url: jdbc:mysql://localhost:3306/heima?useSSL=false
     username: root
     password: 123456
+  rabbitmq:
+    host: 192.168.47.91
+    username: leyou
+    password: leyou
+    virtual-host: /leyou
+    template:
+      retry:
+        enabled: true
+        initial-interval: 10000ms
+        max-interval: 80000ms
+        multiplier: 2
+    publisher-confirms: true    #这是生产者确认
 
 eureka:
   client:

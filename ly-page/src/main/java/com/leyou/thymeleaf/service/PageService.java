@@ -99,5 +99,19 @@ public class PageService {
     }
 
 
+    /**
+     * 根据id将页面删除
+     * @param spuId
+     */
+    public void deleteIndexHtml(Long spuId) {
 
+        File file = new File(itemDir, spuId + ".html");
+
+        if(file.exists()){
+            if (!file.delete()) {
+                log.error("【静态页服务】静态页删除失败，商品id：{}", spuId);
+                throw new LyException(ExceptionEnum.FILE_WRITER_ERROR);
+            }
+        }
+    }
 }

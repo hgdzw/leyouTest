@@ -423,4 +423,12 @@ public class SearchService {
         //返回ids的数量   用来判断分类的数量是不是等于 一  是否发起查询规格参数的请求
         return collect;
     }
+
+    public void createIndex(Goods goods) {
+        goodsRepository.save(goods);
+    }
+
+    public void deleteById(Long id) {
+        goodsRepository.deleteById(id);
+    }
 }

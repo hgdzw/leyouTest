@@ -5,6 +5,11 @@ spring:
     name: page-service
   thymeleaf:
     cache: false  #关闭缓存 这样可以更改页面实时加载
+  rabbitmq:
+    host: 192.168.47.91
+    username: leyou
+    password: leyou
+    virtual-host: /leyou
 eureka:
   client:
     service-url:

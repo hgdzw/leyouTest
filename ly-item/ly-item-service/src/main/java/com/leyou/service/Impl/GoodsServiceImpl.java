@@ -2,10 +2,12 @@ package com.leyou.service.Impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.leyou.common.constants.MQConstants;
 import com.leyou.common.enums.ExceptionEnum;
 import com.leyou.common.exception.LyException;
 import com.leyou.common.utils.BeanHelper;
 import com.leyou.common.vo.PageResult;
+import com.leyou.config.RabbitConfig;
 import com.leyou.entity.Sku;
 import com.leyou.entity.Spu;
 import com.leyou.entity.SpuDetail;
@@ -16,6 +18,7 @@ import com.leyou.mapper.SpuMapper;
 import com.leyou.service.GoodsService;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.internal.bytebuddy.implementation.bytecode.Throw;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -46,6 +49,10 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Autowired
     private BrandServiceImpl brandService;
+
+    //消息队列
+    @Autowired
+    private AmqpTemplate amqpTemplate;
 
     @Autowired
     private CategoryServiceImpl categoryService;
@@ -291,6 +298,13 @@ public class GoodsServiceImpl implements GoodsService {
         if (i1!=skus.size()){
             throw new LyException(ExceptionEnum.UPDATE_OPERATION_FAIL);
         }
+
+        //这里 商品上下架 导致搜索 和静态页的服务的创建和删除
+
+        //发送消息
+        String item_key = saleable ? MQConstants.RoutingKey.ITEM_UP_KEY : MQConstants.RoutingKey.ITEM_DOWN_KEY;
+        amqpTemplate.convertAndSend(MQConstants.Exchange.ITEM_EXCHANGE_NAME,item_key,spuId);
+
     }
 
     /**
