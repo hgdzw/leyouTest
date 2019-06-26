@@ -6,7 +6,7 @@ spring:
   thymeleaf:
     cache: false  #关闭缓存 这样可以更改页面实时加载
   rabbitmq:
-    host: 192.168.47.91
+    host: 192.168.47.97
     username: leyou
     password: leyou
     virtual-host: /leyou
