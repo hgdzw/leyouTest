@@ -8,6 +8,19 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/heima
     username: root
     password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+  redis:
+    host: 192.168.47.97
+  rabbitmq:
+    host: 192.168.47.97
+    username: leyou
+    password: leyou
+    virtual-host: /leyou
+ly:
+  encoder:
+    crypt:
+      secret: ${random.uuid} # 随机的密钥，使用uuid
+      strength: 4 # 加密强度4~31，决定了密码和盐加密时的运算次数，超过10以后加密耗时会显著增加
 eureka:
   client:
     service-url:
