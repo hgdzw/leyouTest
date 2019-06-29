@@ -37,6 +37,10 @@ zuul:
     user-service:
       path: /user/**
       serviceId: user-service
+    auth-service:
+      path: /auth/**
+      serviceId: auth-service
+  sensitive-headers:      #覆盖敏感头信息
 ly:
   cors:
     allowedOrigins:
@@ -54,3 +58,18 @@ ly:
       - HEAD
     maxAge: 360000
     filterPath: "/**"
+  #这是公钥 的地址
+  jwt:
+    pubKeyPath: C:/Users/kafei/.ssh/rsa/id_rsa.pub # C:/develop/ssh/id_rsa.pub # 公钥地址
+    user:
+      cookieName: LY_TOKEN # cookie名称
+
+  #这是过滤白名单的
+  filter:
+    allowPaths:   #白名单
+      - /api/auth/login     #这是登录接口
+      - /api/search       #这是查询接口
+      - /api/user/register    #这是注册接口
+      - /api/user/check   #这是校验接口
+      - /api/user/code    #这是验证码接口
+      - /api/item       #这是商品接口

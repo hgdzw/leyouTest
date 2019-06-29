@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: dzw
@@ -91,7 +92,7 @@ public class UserService {
 
         //把验证码 保存进redis
         ValueOperations<String, String> opsForValue = redisTemplate.opsForValue();
-        opsForValue.set(prefix_phone+phone,s);
+        opsForValue.set(prefix_phone+phone,s,1, TimeUnit.MINUTES);
     }
 
     /**

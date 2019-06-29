@@ -19,6 +19,7 @@
         <module>ly-page</module>
         <module>ly-sms</module>
         <module>ly-user</module>
+        <module>ly-auth</module>
     </modules>
 
     <!--springboot父工程-->

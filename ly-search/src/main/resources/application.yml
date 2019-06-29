@@ -7,9 +7,9 @@ spring:
     elasticsearch:
       cluster-name: leyou-elastic
       #cluster-nodes: 192.168.29.93:9301,192.168.29.93:9302,192.168.29.93:9303
-      cluster-nodes: 192.168.47.97:9300
+      cluster-nodes: 192.168.47.98:9300
   rabbitmq:
-    host: 192.168.47.97
+    host: 192.168.47.98
     username: leyou
     password: leyou
     virtual-host: /leyou

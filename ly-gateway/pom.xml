@@ -23,6 +23,13 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
+
+        <!--用到rsa 和jwt的功能-->
+        <dependency>
+            <groupId>com.leyou</groupId>
+            <artifactId>ly-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
