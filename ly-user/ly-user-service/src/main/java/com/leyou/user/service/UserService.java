@@ -18,7 +18,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -129,9 +129,9 @@ public class UserService {
      */
     public UserDTO queryUser(String username,String password) {
 
+        Hashtable hashtable = new Hashtable();
         //判断用户名是否存在
         User user = new User();
-
         user.setUsername(username);
         User i = userMapper.selectOne(user);
         if (i==null){

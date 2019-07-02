@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runner.Runner;
 
+import java.lang.reflect.Proxy;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -59,6 +60,7 @@ public class BeanHelperTest {
     public void TestJwt() throws Exception {
 
         //获取私钥 用来加密token的
+
         PrivateKey privateKey = RsaUtils.getPrivateKey(privateFileName);
 
         UserInfo userInfo = new UserInfo();
@@ -77,6 +79,16 @@ public class BeanHelperTest {
         System.out.println("解密后的"+infoFromToken);
 
 
+    }
+
+    @Test
+    public void hash(){
+
+        String a = "123";
+        Long b = 456l;
+
+        System.out.println("a="+a.toString());
+        System.out.println("b="+b.toString());
     }
 
 }

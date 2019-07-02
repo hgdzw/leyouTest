@@ -20,6 +20,7 @@
         <module>ly-sms</module>
         <module>ly-user</module>
         <module>ly-auth</module>
+        <module>ly-cart</module>
     </modules>
 
     <!--springboot父工程-->

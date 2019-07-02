@@ -33,4 +33,6 @@ public interface GoodsService {
     List<SkuDTO> querySkuBySpuId(Long spuId);
 
     void updateGoodsById(SpuDTO spuDTO);
+
+    List<SkuDTO> querySkuByIds(List<Long> ids);
 }

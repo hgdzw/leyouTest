@@ -268,6 +268,27 @@ public class GoodsServiceImpl implements GoodsService {
         }
     }
 
+
+    /**
+     * 根据id的集合查询sku的集合
+     * @param ids
+     * @return
+     */
+    @Override
+    public List<SkuDTO> querySkuByIds(List<Long> ids) {
+
+        if (CollectionUtils.isEmpty(ids)) {
+            throw new LyException(ExceptionEnum.INVALID_PARAM_ERROR);
+        }
+        List<Sku> skus = skuMapper.selectByIdList(ids);
+
+        if (CollectionUtils.isEmpty(skus)) {
+            throw new LyException(ExceptionEnum.GOODS_NOT_FOUND);
+        }
+
+        return BeanHelper.copyWithCollection(skus, SkuDTO.class);
+    }
+
     /**
      * 修改上下架的问题
      * @param spuId

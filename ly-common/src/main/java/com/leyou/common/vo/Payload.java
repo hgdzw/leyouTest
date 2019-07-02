@@ -2,6 +2,7 @@ package com.leyou.common.vo;
 
 import lombok.Data;
 
+import java.lang.reflect.Proxy;
 import java.util.Date;
 
 /**
@@ -10,6 +11,7 @@ import java.util.Date;
  */
 @Data
 public class Payload<T> {
+
     private String id;
     private T userInfo;
     private Date expiration;

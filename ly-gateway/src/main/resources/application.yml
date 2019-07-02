@@ -46,6 +46,9 @@ zuul:
     auth-service:
       path: /auth/**
       serviceId: auth-service
+    cart-service:
+      path: /cart/**
+      serviceId: cart-service
   sensitive-headers:      #覆盖敏感头信息
 ly:
   cors:
