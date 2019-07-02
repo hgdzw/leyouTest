@@ -30,6 +30,25 @@
             <artifactId>ly-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
+        <!--用来调用授权中心的接口-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <!--feign-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <!--调用 auth 的feign-->
+        <dependency>
+            <groupId>com.leyou</groupId>
+            <artifactId>ly-auth-intface</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

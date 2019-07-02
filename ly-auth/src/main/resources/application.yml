@@ -2,7 +2,7 @@ spring:
   application:
     name: auth-service
   redis:
-    host: 192.168.47.98
+    host: 192.168.47.84
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/heima?allowMultiQueries=true
@@ -29,6 +29,15 @@ ly:
       cookieName: LY_TOKEN # cookie名称
       cookieDomain: leyou.com # cookie的域
       minRefreshInterval:  15 #cookie的最小刷新间隔
+    app:
+      id: 10
+      secret: auth-service # auth服务的密钥，默认也是服务名称
+      expire: 1500  #服务的过期时间 分钟
+      headerName: privilege_token   #token的请求头名称
+  encoder:
+      crypt:
+        secret: ${random.uuid}
+        strength: 10
 mybatis:
   type-aliases-package:   com.leyou.auth.entity
   mapper-locations: mappers/*.xml
@@ -36,3 +45,7 @@ mybatis:
       map-underscore-to-camel-case: true
 mapper:
   wrap-keyword: "`{0}`"
+
+#加密
+
+

@@ -4,6 +4,7 @@ import com.leyou.auth.service.AuthService;
 import com.leyou.common.vo.UserInfo;
 import com.netflix.client.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.proxy.Proxy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -46,8 +47,9 @@ public class AuthController {
     @GetMapping("verify")
     public ResponseEntity<UserInfo> verifyUser(HttpServletRequest request,HttpServletResponse response){
 
-
         return ResponseEntity.ok(authService.verifyUser(request,response));
+
+
 
     }
 
@@ -66,7 +68,25 @@ public class AuthController {
     }
 
 
-//    TODO 没写完
+    /**
+     * 服务的授权  传id 和 秘钥 过来
+     * @param id
+     * @param secret
+     * @return  传的token 里面包括AppInfo
+     */
+    @GetMapping("authorization")
+    public ResponseEntity<String> authorize(@RequestParam("id")Long id,
+                                            @RequestParam("secret")String secret){
 
+        return ResponseEntity.ok(authService.authorize(id,secret));
+    }
+
+    @GetMapping("str")
+    public ResponseEntity<String> str(@RequestParam("id")Long id,
+                                            @RequestParam("secret")String secret){
+
+        return ResponseEntity.ok("shoudao" + secret);
+
+    }
 
 }

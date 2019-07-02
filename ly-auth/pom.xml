@@ -10,6 +10,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ly-auth</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>ly-auth-intface</module>
+    </modules>
 
     <dependencies>
         <dependency>

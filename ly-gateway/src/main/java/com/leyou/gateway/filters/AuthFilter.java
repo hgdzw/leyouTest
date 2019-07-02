@@ -27,8 +27,6 @@ import java.util.Date;
 
 @Slf4j
 @EnableConfigurationProperties({JwtProperties.class, FilterProperties.class})
-
-//TODO 这里的过滤器 暂时先不开启
 @Component
 
 public class AuthFilter extends ZuulFilter {

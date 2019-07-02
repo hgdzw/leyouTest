@@ -1,4 +1,4 @@
-package com.leyou.gateway.config;
+package com.leyou.user.config;
 
 import com.leyou.common.utils.RsaUtils;
 import lombok.Data;
@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.security.PublicKey;
 
 /**
+ * 读取配置类
  * @author 虎哥
  */
 @Data
@@ -19,36 +20,27 @@ public class JwtProperties implements InitializingBean {
      * 公钥地址
      */
     private String pubKeyPath;
-    
-    private PublicKey publicKey;
     /**
-     * 用户token相关属性
+     * 服务认证token相关属性
      */
-    private UserTokenProperties user = new UserTokenProperties();
-    private AppTokenProperties app = new AppTokenProperties();
+    private PrivilegeTokenProperties app = new PrivilegeTokenProperties();
+
+    private PublicKey publicKey;
 
     @Data
-    public class AppTokenProperties{
+    public class PrivilegeTokenProperties{
         /**
          * 服务id
          */
         private Long id;
         /**
-         * 服务秘钥
+         * 服务密钥
          */
         private String secret;
         /**
-         * token的请求头名称
+         * 存放服务认证token的请求头
          */
         private String headerName;
-    }
-
-    @Data
-    public class UserTokenProperties {
-        /**
-         * 存放token的cookie名称
-         */
-        private String cookieName;
     }
 
     @Override

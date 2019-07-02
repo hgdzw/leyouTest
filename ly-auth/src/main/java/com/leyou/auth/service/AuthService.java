@@ -1,6 +1,10 @@
 package com.leyou.auth.service;
 
 import com.leyou.auth.config.JwtProperties;
+import com.leyou.auth.config.PasswordConfig;
+import com.leyou.auth.entity.AppInfo;
+import com.leyou.auth.entity.ApplicationInfo;
+import com.leyou.auth.mapper.ApplicationMapper;
 import com.leyou.common.enums.ExceptionEnum;
 import com.leyou.common.exception.LyException;
 import com.leyou.common.utils.CookieUtils;
@@ -14,6 +18,7 @@ import com.sun.xml.internal.bind.v2.TODO;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
@@ -21,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.PrivateKey;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -31,11 +37,17 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class AuthService {
 
+
     @Autowired
     private UserClient userClient;
 
     @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
     private JwtProperties pro;
+
+    @Autowired
+    private ApplicationMapper applicationMapper;
 
     @Autowired
     private StringRedisTemplate redisTemplate;
@@ -171,5 +183,37 @@ public class AuthService {
         ,response);
         
         
+    }
+
+    /**
+     * 服务间的授权
+     * @param id
+     * @param secret
+     * @return
+     */
+    public String authorize(Long id, String secret) {
+        //根据查询身份信息
+        ApplicationInfo info = applicationMapper.selectByPrimaryKey(id);
+
+        if (info == null) {
+            throw new LyException(ExceptionEnum.INVALID_SERVER_ID_SECRET);
+        }
+        //将密码进行比较
+        if (!passwordEncoder.matches(secret, info.getSecret())) {
+            //不匹配
+            throw new LyException(ExceptionEnum.INVALID_SERVER_ID_SECRET);
+
+        }
+        //进行权限添加
+        //查询权限
+        List<Long> target = applicationMapper.queryTargetById(id);
+        AppInfo appInfo = new AppInfo();
+        appInfo.setId(id);
+        appInfo.setServiceName(info.getServiceName());
+        appInfo.setTargetList(target);
+        //生成token
+        String token = JwtUtils.generateTokenExpireInMinutes(appInfo, pro.getPrivateKey(), pro.getApp().getExpire());
+        return token;
+
     }
 }

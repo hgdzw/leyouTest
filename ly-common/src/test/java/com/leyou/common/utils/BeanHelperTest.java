@@ -1,6 +1,7 @@
 package com.leyou.common.utils;
 
 
+import com.leyou.common.auth.entity.AppInfo;
 import com.leyou.common.vo.Payload;
 import com.leyou.common.vo.UserInfo;
 import org.junit.Test;
@@ -37,6 +38,20 @@ public class BeanHelperTest {
 
     }
 
+
+    /**
+     * 解析token
+     */
+    @Test
+    public void parseToken() throws Exception {
+
+        String token = "eyJhbGciOiJSUzI1NiJ9.eyJ1c2VyIjoie1wiaWRcIjo3LFwic2VydmljZU5hbWVcIjpcImFwaS1nYXRld2F5XCIsXCJ0YXJnZXRMaXN0XCI6WzEsMiwzLDQsNSw2LDcsOCw5LDEwXX0iLCJqdGkiOiJPVFZsTkRreFptTXRNMlZsTUMwMFlUSmhMVGswWldFdFl6ZG1aVFF5TVRBMU9USTMiLCJleHAiOjE1NjIxMjMyMzN9.mGamDvl8Y61Yt5fDCFdSnNXVfrJ1ioEmwt8SXHWEDt-bvvucYkP-crusNCqtfdCYMHTTWwQsnMBjhMsztOy2c9xiJ1lYe55nQYW_QZn2pqT5KIDPk_iXYpIDsDrVeOeIpyAFmdJHE51Nl6IxM3DbUPoZ7EF9ILO2mtVqz3x6BmbGA57KEZqZkX4OsGvMe8ZcAyZRQUzFnxO0GCFl7RTXcVGboTPq1rqK7O53xX01Ba878Hz3QDYWzizT8NGI1pSGHukajf2aFxxFgTamLO-1ZudPTlEHtP3bxbXtDGxiz8pLSUNOvsM1Op2aRxaTa36oDtnmpQZIL7HPbbTULTUFpw";
+        Payload<AppInfo> fromToken1 = JwtUtils.getInfoFromToken(token, RsaUtils.getPublicKey(publicFileName), AppInfo.class);
+        AppInfo userInfo = fromToken1.getUserInfo();
+        System.out.println(userInfo);
+
+
+    }
     /**
      * 这是测试生成JWT的
      */
