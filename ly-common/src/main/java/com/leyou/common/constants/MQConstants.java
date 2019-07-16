@@ -12,6 +12,12 @@ public abstract class MQConstants {
         public static final String ITEM_EXCHANGE_NAME = "ly.item.exchange";
         //短信交换机
         public static final String SMS_EXCHANGE_NAME = "ly.sms.exchange";
+
+        //购物车交换机
+        public static final String CART_EXCHANGE_NAME = "ly.cart.exchange";
+
+
+
     }
 
     public static final class RoutingKey {
@@ -23,6 +29,11 @@ public abstract class MQConstants {
          * 商品下架的routing-key
          */
         public static final String ITEM_DOWN_KEY = "item.down";
+
+        /**
+         * 清空下过单的购物车routing-key
+         */
+        public static final String CART_DOWN_KEY = "cart.down";
 
         /**
          * 短信
@@ -48,6 +59,11 @@ public abstract class MQConstants {
          * 搜索服务，商品下架的队列
          */
         public static final String PAGE_ITEM_DOWN = "page.item.down.queue";
+
+        /**
+         * 搜索服务，购物车清理的队列
+         */
+        public static final String CART_ITEM_DOWN = "cart.item.down.queue";
 
         /**
          * 短信

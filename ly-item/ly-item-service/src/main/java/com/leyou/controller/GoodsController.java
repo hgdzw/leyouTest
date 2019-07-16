@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: dzw
@@ -61,6 +62,15 @@ public class GoodsController {
     }
 
 
+    /**
+     * 减库存
+     * @param cartMap 商品id及数量的map
+     */
+    @PutMapping("/stock/minus")
+    public ResponseEntity<Void> minusStock(@RequestBody Map<Long, Integer> cartMap){
+        goodsService.minusStock(cartMap);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 
     /**
      * 根据spuid 查询spu_datail的数据

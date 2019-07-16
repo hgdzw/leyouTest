@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.leyou.common.constants.MQConstants;
 import com.leyou.common.enums.ExceptionEnum;
 import com.leyou.common.exception.LyException;
+import com.leyou.common.threadLocals.UserHolder;
 import com.leyou.common.utils.BeanHelper;
 import com.leyou.common.vo.PageResult;
 import com.leyou.config.RabbitConfig;
@@ -26,8 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -383,5 +383,36 @@ public class GoodsServiceImpl implements GoodsService {
         }
 
         return BeanHelper.copyWithCollection(select,SkuDTO.class);
+    }
+
+
+    /**
+     * 减库存的 一般是悲观锁 进程加锁 但是我们这里是乐观锁 在sql数据库那边做约束
+     * @param cartMap  商品的id  和商品对应的数目
+     */
+    @Override
+    @Transactional
+    public void minusStock(Map<Long, Integer> cartMap) {
+
+        for (Map.Entry<Long, Integer> entry : cartMap.entrySet()) {
+            Long skuId = entry.getKey();
+            Integer num = entry.getValue();
+
+            //根据这两个减去库存
+            skuMapper.minusStock(skuId,num);
+
+            for (Map.Entry<Long, Integer> integerEntry : cartMap.entrySet()) {
+                integerEntry.getKey();
+            }
+
+            List<Long> skuIds = cartMap.entrySet().stream().map(s -> s.getKey()).collect(Collectors.toList());
+            HashMap<Long, List<Long>> map = new HashMap<>();
+            map.put(UserHolder.getUser(),skuIds);
+            //发送消息到队列 库存减掉应该已经下单了  那么购物车的数据就应该减掉
+            //发送消息 指定交换机和routingkey和消息   这个时候购物车那边就应该有一个linstin  监听这个队列
+            amqpTemplate.convertAndSend(MQConstants.Exchange.CART_EXCHANGE_NAME,MQConstants.RoutingKey.CART_DOWN_KEY,map);
+
+        }
+
     }
 }

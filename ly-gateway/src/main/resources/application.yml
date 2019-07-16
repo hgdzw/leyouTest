@@ -49,6 +49,15 @@ zuul:
     cart-service:
       path: /cart/**
       serviceId: cart-service
+    order-service:
+      path: /order/**
+      serviceId: order-service
+      strip-prefix: false  #忽略order 并传递到后层
+    pay-service:    #支付接口  交给order 一起处理
+      path: /pay/**
+      serviceId: order-service
+      strip-prefix: false  #忽略order 并传递到后层
+
   sensitive-headers:      #覆盖敏感头信息
 ly:
   cors:
@@ -86,6 +95,7 @@ ly:
       - /api/user/check   #这是校验接口
       - /api/user/code    #这是验证码接口
       - /api/item #这是商品接口
+      - /api/pay  #支付接口
 logging:
   level:
     com.leyou: debug

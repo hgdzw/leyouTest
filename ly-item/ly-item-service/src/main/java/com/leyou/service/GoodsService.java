@@ -10,6 +10,7 @@ import com.leyou.item.dto.SpuDetailDTO;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: dzw
@@ -35,4 +36,6 @@ public interface GoodsService {
     void updateGoodsById(SpuDTO spuDTO);
 
     List<SkuDTO> querySkuByIds(List<Long> ids);
+
+    void minusStock(Map<Long, Integer> cartMap);
 }

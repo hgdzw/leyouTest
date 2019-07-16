@@ -11,6 +11,7 @@ import org.junit.runner.Runner;
 import java.lang.reflect.Proxy;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
@@ -89,6 +90,39 @@ public class BeanHelperTest {
 
         System.out.println("a="+a.toString());
         System.out.println("b="+b.toString());
+    }
+    class Person{
+
+        private int age;
+        private String name;
+
+        public int getAge() {
+            return age;
+        }
+
+        public void setAge(int age) {
+            this.age = age;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+    @Test
+    public void list(){
+
+
+        ArrayList<Person> people = new ArrayList<>();
+
+        Person person = new Person();
+        person.setAge(18);
+        people.add(person);
+        System.out.println(people.toArray().toString());
     }
 
 }

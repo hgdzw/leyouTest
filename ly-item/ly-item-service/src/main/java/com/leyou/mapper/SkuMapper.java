@@ -2,7 +2,8 @@ package com.leyou.mapper;
 
 import com.leyou.common.mapper.BaseMapper;
 import com.leyou.entity.Sku;
-import tk.mybatis.mapper.common.base.insert.InsertMapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 import tk.mybatis.mapper.common.special.InsertListMapper;
 
 /**
@@ -11,4 +12,6 @@ import tk.mybatis.mapper.common.special.InsertListMapper;
  * @Version 1.0
  */
 public interface SkuMapper extends BaseMapper<Sku>,InsertListMapper<Sku> {
+    @Update("UPDATE tb_sku SET stock = stock - #{num} WHERE id = #{id}")
+    int minusStock(@Param("id") Long id, @Param("num") Integer num);
 }

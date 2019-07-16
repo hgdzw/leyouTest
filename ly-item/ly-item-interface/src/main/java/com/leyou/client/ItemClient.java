@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: dzw
@@ -32,6 +33,15 @@ public interface ItemClient {
      */
     @GetMapping("/brand/{id}")
     BrandDTO queryBrandById(@PathVariable("id") Long id);
+
+    /**
+     * 根据skuid的列表 查询sku集合的信息
+     * @param ids
+     * @return
+     */
+    @GetMapping("/sku/list")
+    List<SkuDTO> querySkuByIds(@RequestParam("ids")List<Long> ids);
+
 
     /**
      * 根据spuid 查询 spu
@@ -69,9 +79,18 @@ public interface ItemClient {
     PageResult<SpuDTO> querySpuByPage(@RequestParam(value = "key",required = false)String key,
                                                              @RequestParam(value = "saleable",required = false)Boolean saleable,
                                                              @RequestParam(value = "page",defaultValue = "1")Integer page,
+
                                                              @RequestParam(value = "rows",defaultValue = "5")Integer rows);
 
 
+
+
+    /**
+     * 减库存
+     * @param cartMap 商品id及数量的map
+     */
+    @PutMapping("/stock/minus")
+    void minusStock(@RequestBody Map<Long, Integer> cartMap);
     /**
      * 根据spuid 查询spu_datail的数据
      * @param spuId
