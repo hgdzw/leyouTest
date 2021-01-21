@@ -18,8 +18,8 @@ eureka:
 #阿里云的oss 的配置
 ly:
   oss:
-    accessKeyId: LTAIZVxQu9ikvIBZ
-    accessKeySecret: ojc0V8LdNjoS4QxytNPKNpiFilH7cD
+    accessKeyId:
+    accessKeySecret:
     #host: http://ly-images-file.oss-cn-beijing.aliyuncs.com # 访问oss的域名，很重要bucket + endpoint
 
     host: http://image.leyou.com    #这是返回的域名
